@@ -1,0 +1,15 @@
+.app-header {
+  display: flex;
+  justify-content: center; /* Diubah menjadi center */
+  align-items: center;
+  padding: 1rem 2.5rem;
+  background-color: #2d1a4d; /* Ungu Gelap */
+  color: #f0f0f0; /* Teks Putih Gading */
+  border-bottom: 1px solid #4c2a85;
+}
+
+.logo h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
