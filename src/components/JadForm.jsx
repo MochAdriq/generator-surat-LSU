@@ -105,14 +105,11 @@ function JadForm({ onBackClick }) {
     }
     console.log("Mengirim data untuk paket JAD:", finalData);
     try {
-      const response = await fetch(
-        "http://localhost:3001/generate-jad-package",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(finalData),
-        }
-      );
+      const response = await fetch("api/generate-jad-package", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(finalData),
+      });
       if (!response.ok) throw new Error("Gagal membuat paket di server.");
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);

@@ -84,14 +84,11 @@ function InpassingForm({ onBackClick }) {
     console.log("Mengirim data untuk paket Inpassing:", formData);
 
     try {
-      const response = await fetch(
-        "http://localhost:3001/generate-inpassing-package",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch("api/generate-inpassing-package", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
       if (!response.ok) throw new Error("Gagal membuat paket di server.");
 
