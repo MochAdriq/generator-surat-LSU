@@ -14,9 +14,8 @@ app.use(cors());
 app.use(express.json());
 
 function generateDoc(templateSubfolder, templateName, data) {
-  const templatePath = path.join(
-    process.cwd(),
-    "api",
+  const templatePath = path.resolve(
+    __dirname,
     "templates",
     templateSubfolder,
     templateName
