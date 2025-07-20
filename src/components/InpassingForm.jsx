@@ -84,7 +84,7 @@ function InpassingForm({ onBackClick }) {
     console.log("Mengirim data untuk paket Inpassing:", formData);
 
     try {
-      const response = await fetch("/generate-inpassing-package", {
+      const response = await fetch("api/generate-inpassing-package", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
