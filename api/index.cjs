@@ -13,6 +13,7 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 
+// Fungsi helper (tidak berubah)
 function generateDoc(templateSubfolder, templateName, data) {
   const templatePath = path.resolve(
     __dirname,
@@ -29,7 +30,6 @@ function generateDoc(templateSubfolder, templateName, data) {
 
 // Rute untuk paket INPASSING (tidak berubah)
 app.post("/generate-inpassing-package", (req, res) => {
-  // ... (kode ini tetap sama seperti sebelumnya)
   try {
     const formData = req.body;
     const suratPengantarBuffer = generateDoc(
@@ -60,18 +60,21 @@ app.post("/generate-inpassing-package", (req, res) => {
     archive.finalize();
   } catch (error) {
     console.error("Error saat generate paket Inpassing:", error);
-    res.status(500).json({
-      message: "Gagal membuat paket dokumen Inpassing.",
-      error: error.message,
-    });
+    res
+      .status(500)
+      .json({
+        message: "Gagal membuat paket dokumen Inpassing.",
+        error: error.message,
+      });
   }
 });
 
-// Rute Final Definitif untuk paket JAD
+// Rute Final Definitif untuk paket JAD (Disederhanakan)
 app.post("/generate-jad-package", (req, res) => {
   try {
     let formData = req.body;
 
+    // Logika untuk tanggal terbilang tetap di sini
     if (formData.tanggal_surat && typeof formData.tanggal_surat === "string") {
       const parts = formData.tanggal_surat.split(" ");
       if (parts.length === 3) {
@@ -83,78 +86,47 @@ app.post("/generate-jad-package", (req, res) => {
         formData.tahun_teks = parts[2];
       }
     }
+    // Logika untuk format Status Ikatan Kerja tetap di sini
+    if (
+      formData.status_ikatan_kerja &&
+      typeof formData.status_ikatan_kerja === "string"
+    ) {
+      formData.status_ikatan_kerja = formData.status_ikatan_kerja
+        .replace("Yayasan", "")
+        .trim();
+    }
 
-    // Siapkan data spesifik untuk setiap template
-    const dataPengantar = {
-      nomor_surat_pengantar: formData.nomor_surat_pengantar,
-      tanggal_surat: formData.tanggal_surat,
-      nama_dosen_gelar: formData.nama_dosen_gelar,
-      pangkat_awal: formData.pangkat_awal,
-      pangkat_usulan: formData.pangkat_usulan,
-      prodi: formData.prodi,
-    };
-
-    const dataUmum = {
-      nama_dosen_gelar: formData.nama_dosen_gelar,
-      id_dosen: formData.id_dosen,
-      status_ikatan_kerja: formData.status_ikatan_kerja,
-      ttl_dosen: formData.ttl_dosen,
-      pangkat_golongan_dosen: formData.pangkat_golongan_dosen,
-      jabatan_tmt_dosen: formData.jabatan_tmt_dosen,
-      pendidikan_tertinggi: formData.pendidikan_tertinggi,
-      fakultas_dosen: formData.fakultas_dosen,
-      prodi: formData.prodi,
-      pangkat_usulan: formData.pangkat_usulan,
-      bidang_ilmu: formData.bidang_ilmu,
-      tanggal_surat: formData.tanggal_surat,
-      hari_teks: formData.hari_teks,
-      tanggal_teks: formData.tanggal_teks,
-      bulan_teks: formData.bulan_teks,
-      tahun_teks: formData.tahun_teks,
-    };
-
-    // Generate setiap dokumen dengan data yang sesuai
+    // LANGSUNG GENERATE DOKUMEN DENGAN formData LENGKAP DARI FRONTEND
     const pengantarJafung = generateDoc(
       "jad",
       "pengantar_jafung.docx",
-      dataPengantar
+      formData
     );
-    const baSenat = generateDoc("jad", "ba_senat.docx", {
-      ...dataUmum,
-      nomor_surat_senat: formData.nomor_surat_senat,
-    });
+    const baSenat = generateDoc("jad", "ba_senat.docx", formData);
     const pernyataanKeabsahan = generateDoc(
       "jad",
       "pernyataan_keabsahan.docx",
-      dataUmum
+      formData
     );
     const pernyataanFaktaIntegritas = generateDoc(
       "jad",
       "pernyataan_fakta_integritas.docx",
-      { ...dataUmum, nomor_surat_integritas: formData.nomor_surat_integritas }
+      formData
     );
-    const baKomite = generateDoc("jad", "ba_komite.docx", {
-      ...dataUmum,
-      nomor_surat_komite: formData.nomor_surat_komite,
-      tanggal_surat_senat: formData.tanggal_surat,
-      nomor_surat_senat: formData.nomor_surat_senat,
-    });
-    const pernyataanPi = generateDoc("jad", "pernyataan_pi_jad.docx", {
-      ...dataUmum,
-      nomor_surat_pi: formData.nomor_surat_pi,
-      bidang_kepakaran: formData.bidang_ilmu,
-    });
+    const baKomite = generateDoc("jad", "ba_komite.docx", formData);
+    const pernyataanPi = generateDoc("jad", "pernyataan_pi_jad.docx", formData);
     const penilaianPrestasi = generateDoc(
       "inpassing",
       "penilaian_prestasi.docx",
       formData
-    ); // Penilaian Prestasi menggunakan data lengkap
+    );
 
     const zipName = `Paket_JAD_${formData.nama_dosen_gelar || "Dosen"}.zip`;
     res.attachment(zipName);
     const archive = archiver("zip", { zlib: { level: 9 } });
     archive.pipe(res);
 
+    // Masukkan semua 7 file ke dalam ZIP
     archive.append(pengantarJafung, { name: "1_Pengantar_Jafung.docx" });
     archive.append(baSenat, { name: "2_BA_Senat.docx" });
     archive.append(pernyataanKeabsahan, {
@@ -170,10 +142,12 @@ app.post("/generate-jad-package", (req, res) => {
     archive.finalize();
   } catch (error) {
     console.error("Error saat generate paket JAD:", error);
-    res.status(500).json({
-      message: "Gagal membuat paket dokumen JAD.",
-      error: error.message,
-    });
+    res
+      .status(500)
+      .json({
+        message: "Gagal membuat paket dokumen JAD.",
+        error: error.message,
+      });
   }
 });
 
