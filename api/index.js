@@ -33,7 +33,6 @@ function sanitizeFilename(name) {
 function generateDoc(templateSubfolder, templateName, data) {
   const templatePath = path.resolve(
     __dirname,
-    "api",
     "templates",
     templateSubfolder,
     templateName

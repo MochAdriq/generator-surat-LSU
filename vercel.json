@@ -1,13 +1,13 @@
 {
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "api/templates/**"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/index.js"
+      "destination": "/api/index.js"
     }
-  ],
-  "functions": {
-    "index.js": {
-      "includeFiles": "api/templates/**"
-    }
-  }
+  ]
 }
