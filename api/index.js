@@ -44,6 +44,12 @@ function generateDoc(templateSubfolder, templateName, data) {
   return doc.getZip().generate({ type: "nodebuffer", compression: "DEFLATE" });
 }
 
+app.use((req, res, next) => {
+  console.log(`[DEBUG] Path yang diterima oleh Express: ${req.path}`);
+  console.log(`[DEBUG] URL Asli yang diterima: ${req.originalUrl}`);
+  next();
+});
+
 app.post("/generate-inpassing-package", (req, res) => {
   try {
     const formData = req.body;
