@@ -4,11 +4,10 @@ import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url"; // <-- Tambahan
+import { fileURLToPath } from "url";
 import archiver from "archiver";
 import terbilang from "terbilang";
 
-// Trik untuk mendapatkan '__dirname' di ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -17,6 +16,19 @@ const port = 3001;
 
 app.use(cors());
 app.use(express.json());
+
+/**
+ * @param {string} name - Nama asli yang akan dibersihkan.
+ * @returns {string} Nama yang sudah bersih.
+ */
+function sanitizeFilename(name) {
+  if (!name) return "Dosen";
+  return name
+    .replace(/,.*$/, "") // Hapus gelar
+    .trim() // Hapus spasi di awal/akhir
+    .replace(/[^a-zA-Z0-9\s]/g, "") // Hapus karakter aneh
+    .replace(/\s+/g, "_"); // Ganti spasi dengan underscore
+}
 
 function generateDoc(templateSubfolder, templateName, data) {
   const templatePath = path.resolve(
@@ -32,9 +44,7 @@ function generateDoc(templateSubfolder, templateName, data) {
   return doc.getZip().generate({ type: "nodebuffer", compression: "DEFLATE" });
 }
 
-// Rute untuk paket INPASSING (tidak berubah)
 app.post("/generate-inpassing-package", (req, res) => {
-  // ... (kode ini tetap sama seperti sebelumnya)
   try {
     const formData = req.body;
     const suratPengantarBuffer = generateDoc(
@@ -53,8 +63,14 @@ app.post("/generate-inpassing-package", (req, res) => {
       formData
     );
 
-    const zipName = `Paket_Inpassing_${formData.dinilai_nama || "Dosen"}.zip`;
+    const safeName = sanitizeFilename(formData.dinilai_nama);
+    const zipName = `Paket_Inpassing_${safeName}.zip`;
+
     res.attachment(zipName);
+    res.setHeader("Content-Type", "application/zip");
+
+    console.log("Nama file yang dibuat:", zipName);
+
     const archive = archiver("zip", { zlib: { level: 9 } });
     archive.pipe(res);
     archive.append(suratPengantarBuffer, { name: "1_Surat_Pengantar.docx" });
@@ -72,7 +88,6 @@ app.post("/generate-inpassing-package", (req, res) => {
   }
 });
 
-// Rute Final Definitif untuk paket JAD
 app.post("/generate-jad-package", (req, res) => {
   try {
     let formData = req.body;
@@ -89,7 +104,6 @@ app.post("/generate-jad-package", (req, res) => {
       }
     }
 
-    // Siapkan data spesifik untuk setiap template
     const dataPengantar = {
       nomor_surat_pengantar: formData.nomor_surat_pengantar,
       tanggal_surat: formData.tanggal_surat,
@@ -98,7 +112,6 @@ app.post("/generate-jad-package", (req, res) => {
       pangkat_usulan: formData.pangkat_usulan,
       prodi: formData.prodi,
     };
-
     const dataUmum = {
       nama_dosen_gelar: formData.nama_dosen_gelar,
       id_dosen: formData.id_dosen,
@@ -118,7 +131,6 @@ app.post("/generate-jad-package", (req, res) => {
       tahun_teks: formData.tahun_teks,
     };
 
-    // Generate setiap dokumen dengan data yang sesuai
     const pengantarJafung = generateDoc(
       "jad",
       "pengantar_jafung.docx",
@@ -153,10 +165,14 @@ app.post("/generate-jad-package", (req, res) => {
       "inpassing",
       "penilaian_prestasi.docx",
       formData
-    ); // Penilaian Prestasi menggunakan data lengkap
+    );
 
-    const zipName = `Paket_JAD_${formData.nama_dosen_gelar || "Dosen"}.zip`;
+    const safeName = sanitizeFilename(formData.nama_dosen_gelar);
+    const zipName = `Paket_JAD_${safeName}.zip`;
+
     res.attachment(zipName);
+    res.setHeader("Content-Type", "application/zip");
+
     const archive = archiver("zip", { zlib: { level: 9 } });
     archive.pipe(res);
 

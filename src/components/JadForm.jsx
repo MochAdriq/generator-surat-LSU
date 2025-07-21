@@ -1,5 +1,3 @@
-// File: src/components/JadForm.jsx (Final Definitif)
-
 import React, { useState, useEffect } from "react";
 import { dataDosen } from "../data.js";
 import "./InpassingForm.css";
@@ -40,7 +38,6 @@ function JadForm({ onBackClick }) {
     const selectedDinilai = dataDosen.find((d) => d.NIDN == dinilaiId) || null;
     const selectedPenilai = dataDosen.find((d) => d.NIDN == penilaiId) || null;
 
-    // Fungsi setState sekarang menggunakan callback (prevData) untuk memastikan data manual tidak hilang
     setFormData((prevData) => {
       const namaTampilDinilai =
         selectedDinilai?.namaDosenGelar || selectedDinilai?.namaDosen || "";
@@ -49,7 +46,6 @@ function JadForm({ onBackClick }) {
       const pendidikanTerakhir =
         selectedDinilai?.pendidikanS3 || selectedDinilai?.pendidikanS2 || "";
 
-      // Objek ini hanya berisi data yang diisi otomatis
       const autoFilledData = {
         dinilai_nama: namaTampilDinilai,
         dinilai_id: selectedDinilai?.NUPTK || "",
@@ -82,7 +78,6 @@ function JadForm({ onBackClick }) {
           : "",
       };
 
-      // Gabungkan data manual yang sudah ada (prevData) dengan data otomatis yang baru
       return {
         ...prevData,
         ...autoFilledData,
@@ -97,6 +92,7 @@ function JadForm({ onBackClick }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     const finalData = { ...formData };
     for (const key in finalData) {
       if (finalData[key] === "" || finalData[key] == null) {
@@ -104,21 +100,31 @@ function JadForm({ onBackClick }) {
       }
     }
     console.log("Mengirim data untuk paket JAD:", finalData);
+
     try {
-      const response = await fetch("api/generate-jad-package", {
+      const response = await fetch("/api/generate-jad-package", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(finalData),
       });
+
       if (!response.ok) throw new Error("Gagal membuat paket di server.");
+
+      const disposition = response.headers.get("content-disposition");
+      let filename = `Paket_JAD.zip`;
+
+      if (disposition && disposition.indexOf("attachment") !== -1) {
+        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+        const matches = filenameRegex.exec(disposition);
+        if (matches != null && matches[1]) {
+          filename = matches[1].replace(/['"]/g, "");
+        }
+      }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      const disposition = response.headers.get("content-disposition");
-      const filename = disposition
-        ? disposition.split("filename=")[1]
-        : `Paket_JAD.zip`;
       a.download = filename;
       document.body.appendChild(a);
       a.click();
@@ -130,7 +136,7 @@ function JadForm({ onBackClick }) {
     }
   };
 
-  const dinilaiData = dataDosen.find((d) => d.NIDN == dinilaiId) || null;
+  // const dinilaiData = dataDosen.find((d) => d.NIDN == dinilaiId) || null;
 
   return (
     <div className="super-form-container">

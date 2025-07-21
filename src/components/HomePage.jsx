@@ -6,12 +6,10 @@ import JadForm from "./JadForm";
 function HomePage() {
   const [activePackage, setActivePackage] = useState(null);
 
-  // Fungsi untuk kembali ke halaman pilihan kartu
   const handleGoBack = () => {
     setActivePackage(null);
   };
 
-  // Tampilan Awal: Pilihan Paket
   if (!activePackage) {
     return (
       <div className="homepage-container">
@@ -44,12 +42,10 @@ function HomePage() {
     );
   }
 
-  // Tampilan Form Inpassing (jika dipilih)
   if (activePackage === "inpassing") {
     return <InpassingForm onBackClick={handleGoBack} />;
   }
 
-  // Tampilan Form JAD (jika dipilih)
   if (activePackage === "jad") {
     return <JadForm onBackClick={handleGoBack} />;
   }

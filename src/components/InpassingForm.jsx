@@ -3,19 +3,15 @@ import { dataDosen } from "../data.js";
 import "./InpassingForm.css";
 
 function InpassingForm({ onBackClick }) {
-  // State untuk menyimpan semua data final yang akan dikirim
   const [formData, setFormData] = useState({});
 
-  // State untuk melacak ID dari dropdown
   const [dinilaiId, setDinilaiId] = useState("");
   const [penilaiId, setPenilaiId] = useState("");
 
   useEffect(() => {
-    // Menggunakan perbandingan '==' agar tidak masalah antara angka dan teks
     const selectedDinilai = dataDosen.find((d) => d.NIDN == dinilaiId) || null;
     const selectedPenilai = dataDosen.find((d) => d.NIDN == penilaiId) || null;
 
-    // Menggunakan nama key yang sesuai dengan data.js Anda (namaDosenGelar, Inpassing, dll)
     const namaTampilDinilai =
       selectedDinilai?.namaDosenGelar || selectedDinilai?.namaDosen || "";
     const namaTampilPenilai =
@@ -30,9 +26,8 @@ function InpassingForm({ onBackClick }) {
       pangkat_usulan: formData.pangkat_usulan || "",
       status_kepegawaian: formData.status_kepegawaian || "Dosen Tetap Yayasan",
 
-      // Data dari Dosen yang Dinilai (dengan key baru dan logika NUPTK)
       dinilai_nama: namaTampilDinilai,
-      dinilai_id: selectedDinilai?.NUPTK || "", // Menggunakan NUPTK sesuai revisi
+      dinilai_id: selectedDinilai?.NUPTK || "",
       dinilai_nidn: selectedDinilai?.NIDN || "",
       dinilai_nuptk: selectedDinilai?.NUPTK || "",
       dinilai_pangkat_gol: selectedDinilai?.Inpassing || "",
@@ -41,9 +36,8 @@ function InpassingForm({ onBackClick }) {
       dinilai_prodi: selectedDinilai?.programStudi || "",
       pendidikan_terakhir: pendidikanTerakhir,
 
-      // Data dari Pejabat Penilai
       penilai_nama: namaTampilPenilai,
-      penilai_id: selectedPenilai?.NUPTK || "", // Menggunakan NUPTK sesuai revisi
+      penilai_id: selectedPenilai?.NUPTK || "",
       penilai_pangkat_gol: selectedPenilai?.Inpassing || "",
       penilai_jabatan:
         selectedPenilai?.jabatan_struktural ||
@@ -51,19 +45,17 @@ function InpassingForm({ onBackClick }) {
         "",
       penilai_pts: selectedPenilai ? "Universitas Nusa Putra" : "",
 
-      // Data Atasan Statis
       atasan_nama: "Dr. Kurniawan, S.T., M.Si., M.M.",
       atasan_id: "0142752653130173",
       atasan_pangkat_gol: "Pembina golongan IV/a",
       atasan_jabatan: "Rektor",
       atasan_pts: "Universitas Nusa Putra",
 
-      // Mapping variabel lain untuk template spesifik (menghindari error)
       nama_dosen: namaTampilDinilai,
-      nidn_dosen: selectedDinilai?.NUPTK || "", // Menggunakan NUPTK sesuai revisi
+      nidn_dosen: selectedDinilai?.NUPTK || "",
       pangkat_awal: selectedDinilai?.Inpassing || "",
       nama_lengkap: namaTampilDinilai,
-      nidn_nuptk: selectedDinilai?.NUPTK || "", // Menggunakan NUPTK sesuai revisi
+      nidn_nuptk: selectedDinilai?.NUPTK || "",
       jabatan_fungsional: selectedDinilai?.jabatanAkademik || "",
       pangkat_golongan: selectedDinilai?.Inpassing || "",
       prodi: selectedDinilai?.programStudi || "",
@@ -72,13 +64,11 @@ function InpassingForm({ onBackClick }) {
     setFormData(newFormData);
   }, [dinilaiId, penilaiId]);
 
-  // Handler untuk setiap input manual di form
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // Handler untuk tombol submit
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log("Mengirim data untuk paket Inpassing:", formData);
@@ -92,14 +82,21 @@ function InpassingForm({ onBackClick }) {
 
       if (!response.ok) throw new Error("Gagal membuat paket di server.");
 
+      const disposition = response.headers.get("content-disposition");
+      let filename = `Paket_Inpassing.zip`;
+
+      if (disposition && disposition.indexOf("attachment") !== -1) {
+        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+        const matches = filenameRegex.exec(disposition);
+        if (matches != null && matches[1]) {
+          filename = matches[1].replace(/['"]/g, "");
+        }
+      }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      const disposition = response.headers.get("content-disposition");
-      const filename = disposition
-        ? disposition.split("filename=")[1]
-        : `Paket_Inpassing.zip`;
       a.download = filename;
       document.body.appendChild(a);
       a.click();
@@ -207,7 +204,6 @@ function InpassingForm({ onBackClick }) {
                   <option value="Dosen Tidak Tetap">Dosen Tidak Tetap</option>
                 </select>
               </div>
-              {/* Jangka Waktu Penilaian dihapus sesuai revisi */}
             </fieldset>
 
             <fieldset>
