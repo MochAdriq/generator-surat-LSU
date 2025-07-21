@@ -50,7 +50,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post("/generate-inpassing-package", (req, res) => {
+app.post("/api/generate-inpassing-package", (req, res) => {
   try {
     const formData = req.body;
     const suratPengantarBuffer = generateDoc(
@@ -94,7 +94,7 @@ app.post("/generate-inpassing-package", (req, res) => {
   }
 });
 
-app.post("/generate-jad-package", (req, res) => {
+app.post("/api/generate-jad-package", (req, res) => {
   try {
     let formData = req.body;
 
