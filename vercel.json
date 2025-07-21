@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.js"
+      "destination": "/index.js"
     }
   ],
   "functions": {
-    "api/index.js": {
+    "index.js": {
       "includeFiles": "api/templates/**"
     }
   }
