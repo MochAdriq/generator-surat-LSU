@@ -267,9 +267,7 @@ function JadForm({ onBackClick }) {
             <fieldset>
               <legend>4. Nomor Surat</legend>
               <div className="form-group">
-                <label>
-                  Nomor Surat Pengantar Jafung: (contoh : …/Spn/UNSP/VII/2025)
-                </label>
+                <label>Nomor Surat Pengantar Jafung:</label>
                 <input
                   type="text"
                   name="nomor_surat_pengantar"
@@ -278,42 +276,38 @@ function JadForm({ onBackClick }) {
                 />
               </div>
               <div className="form-group">
-                <label>
-                  Nomor Surat BA Senat: (contoh : …/BA/UNSP/VII/2025)
-                </label>
+                <label>Nomor Surat BA Senat:</label>
                 <input
                   type="text"
                   name="nomor_surat_senat"
+                  value={formData.nomor_surat_senat || ""}
                   onChange={handleInputChange}
                 />
               </div>
               <div className="form-group">
-                <label>
-                  Nomor Surat Fakta Integritas: …/Sper-PI/UNsP/VII/2025
-                </label>
+                <label>Nomor Surat Fakta Integritas:</label>
                 <input
                   type="text"
                   name="nomor_surat_integritas"
+                  value={formData.nomor_surat_integritas || ""}
                   onChange={handleInputChange}
                 />
               </div>
               <div className="form-group">
-                <label>
-                  Nomor Surat BA Komite: (contoh : …/BA-K/UNSP/VII/2025)
-                </label>
+                <label>Nomor Surat BA Komite:</label>
                 <input
                   type="text"
                   name="nomor_surat_komite"
+                  value={formData.nomor_surat_komite || ""}
                   onChange={handleInputChange}
                 />
               </div>
               <div className="form-group">
-                <label>
-                  Nomor Surat Pernyataan PI: (contoh : …/Sper-PI/UNsP/VII/2025)
-                </label>
+                <label>Nomor Surat Pernyataan PI:</label>
                 <input
                   type="text"
                   name="nomor_surat_pi"
+                  value={formData.nomor_surat_pi || ""}
                   onChange={handleInputChange}
                 />
               </div>
