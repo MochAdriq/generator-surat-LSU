@@ -273,6 +273,7 @@ function JadForm({ onBackClick }) {
                 <input
                   type="text"
                   name="nomor_surat_pengantar"
+                  value={formData.nomor_surat_pengantar || ""}
                   onChange={handleInputChange}
                 />
               </div>

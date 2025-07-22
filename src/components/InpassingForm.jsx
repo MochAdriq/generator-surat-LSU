@@ -160,9 +160,7 @@ function InpassingForm({ onBackClick }) {
             <fieldset>
               <legend>2. Data Pelengkap (Input Manual)</legend>
               <div className="form-group">
-                <label>
-                  Nomor Surat Pengantar: (contoh : 001/Sper/UNsP/VII/2025)
-                </label>
+                <label>Nomor Surat Pengantar :</label>
                 <input
                   type="text"
                   name="nomor_surat"
