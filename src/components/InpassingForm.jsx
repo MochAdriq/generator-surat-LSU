@@ -3,7 +3,9 @@ import { dataDosen } from "../data.js";
 import "./InpassingForm.css";
 
 function InpassingForm({ onBackClick }) {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    nomor_surat: "…/Sper/UNsP/VII/2025",
+  });
 
   const [dinilaiId, setDinilaiId] = useState("");
   const [penilaiId, setPenilaiId] = useState("");
@@ -158,7 +160,9 @@ function InpassingForm({ onBackClick }) {
             <fieldset>
               <legend>2. Data Pelengkap (Input Manual)</legend>
               <div className="form-group">
-                <label>Nomor Surat Pengantar:</label>
+                <label>
+                  Nomor Surat Pengantar: (contoh : 001/Sper/UNsP/VII/2025)
+                </label>
                 <input
                   type="text"
                   name="nomor_surat"

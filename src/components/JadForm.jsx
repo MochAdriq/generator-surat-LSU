@@ -10,12 +10,11 @@ function JadForm({ onBackClick }) {
     hari_teks: "",
     ttl_dosen: "",
     bidang_ilmu: "",
-    nomor_surat_pengantar: "",
-    nomor_surat_senat: "",
-    nomor_surat_komite: "",
-    nomor_surat_pi: "",
-    nomor_surat_keabsahan: "",
-    nomor_surat_integritas: "",
+    nomor_surat_pengantar: "…/Spn/UNSP/VII/2025",
+    nomor_surat_senat: "…/BA/UNSP/VII/2025",
+    nomor_surat_komite: "…/BA-K/UNSP/VII/2025",
+    nomor_surat_pi: "…/Sper-PI/UNsP/VII/2025",
+    nomor_surat_integritas: "…/Sper-PI/UNsP/VII/2025",
   });
   const [dinilaiId, setDinilaiId] = useState("");
   const [penilaiId, setPenilaiId] = useState("");
@@ -268,7 +267,9 @@ function JadForm({ onBackClick }) {
             <fieldset>
               <legend>4. Nomor Surat</legend>
               <div className="form-group">
-                <label>Nomor Surat Pengantar Jafung:</label>
+                <label>
+                  Nomor Surat Pengantar Jafung: (contoh : …/Spn/UNSP/VII/2025)
+                </label>
                 <input
                   type="text"
                   name="nomor_surat_pengantar"
@@ -276,7 +277,9 @@ function JadForm({ onBackClick }) {
                 />
               </div>
               <div className="form-group">
-                <label>Nomor Surat BA Senat:</label>
+                <label>
+                  Nomor Surat BA Senat: (contoh : …/BA/UNSP/VII/2025)
+                </label>
                 <input
                   type="text"
                   name="nomor_surat_senat"
@@ -284,15 +287,9 @@ function JadForm({ onBackClick }) {
                 />
               </div>
               <div className="form-group">
-                <label>Nomor Surat Pernyataan Keabsahan:</label>
-                <input
-                  type="text"
-                  name="nomor_surat_keabsahan"
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Nomor Surat Fakta Integritas:</label>
+                <label>
+                  Nomor Surat Fakta Integritas: …/Sper-PI/UNsP/VII/2025
+                </label>
                 <input
                   type="text"
                   name="nomor_surat_integritas"
@@ -300,7 +297,9 @@ function JadForm({ onBackClick }) {
                 />
               </div>
               <div className="form-group">
-                <label>Nomor Surat BA Komite:</label>
+                <label>
+                  Nomor Surat BA Komite: (contoh : …/BA-K/UNSP/VII/2025)
+                </label>
                 <input
                   type="text"
                   name="nomor_surat_komite"
@@ -308,7 +307,9 @@ function JadForm({ onBackClick }) {
                 />
               </div>
               <div className="form-group">
-                <label>Nomor Surat Pernyataan PI:</label>
+                <label>
+                  Nomor Surat Pernyataan PI: (contoh : …/Sper-PI/UNsP/VII/2025)
+                </label>
                 <input
                   type="text"
                   name="nomor_surat_pi"
