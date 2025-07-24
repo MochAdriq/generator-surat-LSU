@@ -2300,7 +2300,7 @@ export const dataDosen = [
     NIDN: 8955710021,
     NUPTK: "8252754655110023",
     namaDosen: "IWAN SETIAWAN",
-    namaDosenGelar: "",
+    namaDosenGelar: "Dr. Iwan Setiawan, S.T., M.Kom.",
     programStudi: "Teknik Informatika (S1)",
     jabatanAkademik: "Asisten Ahli",
     tmtJad: "01 Januari 2006",
