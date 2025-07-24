@@ -888,7 +888,7 @@ export const dataDosen = [
     pendidikanS3: "",
   },
   {
-    NIDN: "",
+    NIDN: "00",
     NUPTK: 7658765666230252,
     namaDosen: "CHIQUITA MAHARANI",
     namaDosenGelar: "",
