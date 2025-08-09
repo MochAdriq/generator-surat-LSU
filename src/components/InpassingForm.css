@@ -111,3 +111,29 @@
   background-color: #e9ecef;
   color: #2d1a4d;
 }
+
+.form-group {
+  position: relative;
+}
+
+.search-results {
+  position: absolute;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #ccc;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.search-results li {
+  padding: 0.75rem;
+  cursor: pointer;
+}
+
+.search-results li:hover {
+  background-color: #f0f0f0;
+}

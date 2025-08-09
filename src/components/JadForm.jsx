@@ -16,6 +16,13 @@ function JadForm({ onBackClick }) {
     nomor_surat_pi: "…/Sper-PI/UNsP/VII/2025",
     nomor_surat_integritas: "…/Sper-PI/UNsP/VII/2025",
   });
+
+  // --- STATE UNTUK FUNGSI PENCARIAN ---
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredDosen, setFilteredDosen] = useState([]);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  // --- END STATE PENCARIAN ---
+
   const [dinilaiId, setDinilaiId] = useState("");
   const [penilaiId, setPenilaiId] = useState("");
 
@@ -32,6 +39,23 @@ function JadForm({ onBackClick }) {
     if (ftkdProdi.includes(prodi)) return "Teknik, Komputer dan Desain";
     return "Fakultas Bisnis, Hukum, dan Pendidikan";
   };
+
+  // --- LOGIKA UNTUK MELAKUKAN FILTER SAAT PENCARIAN ---
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = dataDosen.filter(
+        (d) =>
+          !d.jabatan_struktural &&
+          (d.namaDosenGelar || d.namaDosen)
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      );
+      setFilteredDosen(filtered);
+    } else {
+      setFilteredDosen([]);
+    }
+  }, [searchQuery]);
+  // --- END LOGIKA FILTER ---
 
   useEffect(() => {
     const selectedDinilai = dataDosen.find((d) => d.NIDN == dinilaiId) || null;
@@ -89,6 +113,19 @@ function JadForm({ onBackClick }) {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // --- FUNGSI BARU UNTUK PENCARIAN ---
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setIsDropdownVisible(true);
+  };
+
+  const handleSelectDosen = (dosen) => {
+    setDinilaiId(dosen.NIDN);
+    setSearchQuery(dosen.namaDosenGelar || dosen.namaDosen);
+    setIsDropdownVisible(false);
+  };
+  // --- END FUNGSI BARU ---
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -135,8 +172,6 @@ function JadForm({ onBackClick }) {
     }
   };
 
-  // const dinilaiData = dataDosen.find((d) => d.NIDN == dinilaiId) || null;
-
   return (
     <div className="super-form-container">
       <button onClick={onBackClick} className="back-button">
@@ -147,22 +182,35 @@ function JadForm({ onBackClick }) {
         <fieldset>
           <legend>1. Data Dosen</legend>
           <div className="form-group">
-            <label>Pilih Dosen:</label>
-            <select
-              name="nama_dosen_gelar"
-              value={dinilaiId}
-              onChange={(e) => setDinilaiId(e.target.value)}
+            <label>Cari & Pilih Dosen:</label>
+            {/* --- ELEMEN INPUT DENGAN FITUR SEARCH --- */}
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFocus={() => setIsDropdownVisible(true)}
+              onBlur={() => setTimeout(() => setIsDropdownVisible(false), 200)}
+              placeholder="Ketik nama dosen untuk mencari..."
+              autoComplete="off"
               required
-            >
-              <option value="">-- Pilih Nama Dosen --</option>
-              {dataDosen
-                .filter((d) => !d.jabatan_struktural)
-                .map((d) => (
-                  <option key={d.NIDN || d.NUPTK} value={d.NIDN}>
-                    {d.namaDosenGelar || d.namaDosen}
-                  </option>
-                ))}
-            </select>
+            />
+            {isDropdownVisible && searchQuery && (
+              <ul className="search-results">
+                {filteredDosen.length > 0 ? (
+                  filteredDosen.map((d) => (
+                    <li
+                      key={d.NIDN || d.NUPTK}
+                      onClick={() => handleSelectDosen(d)}
+                    >
+                      {d.namaDosenGelar || d.namaDosen}
+                    </li>
+                  ))
+                ) : (
+                  <li className="no-result">Dosen tidak ditemukan</li>
+                )}
+              </ul>
+            )}
+            {/* --- END ELEMEN INPUT --- */}
           </div>
           {dinilaiId && (
             <div className="details-view">
@@ -224,7 +272,7 @@ function JadForm({ onBackClick }) {
                 <label>Status Ikatan Kerja:</label>
                 <select
                   name="status_ikatan_kerja"
-                  value="Dosen Tetap"
+                  value={formData.status_ikatan_kerja}
                   onChange={handleInputChange}
                   required
                 >

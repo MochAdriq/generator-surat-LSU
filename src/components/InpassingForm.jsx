@@ -5,10 +5,35 @@ import "./InpassingForm.css";
 function InpassingForm({ onBackClick }) {
   const [formData, setFormData] = useState({
     nomor_surat: "…/Sper/UNsP/VII/2025",
+    status_kepegawaian: "Dosen Tetap Yayasan",
   });
+
+  // --- STATE UNTUK FUNGSI PENCARIAN ---
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredDosen, setFilteredDosen] = useState([]);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  // --- END STATE PENCARIAN ---
 
   const [dinilaiId, setDinilaiId] = useState("");
   const [penilaiId, setPenilaiId] = useState("");
+
+  // --- LOGIKA UNTUK MELAKUKAN FILTER SAAT PENCARIAN ---
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = dataDosen.filter(
+        (d) =>
+          !d.jabatan_struktural &&
+          (d.namaDosenGelar || d.namaDosen)
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      );
+      setFilteredDosen(filtered);
+    } else {
+      // Kosongkan hasil jika input search kosong
+      setFilteredDosen([]);
+    }
+  }, [searchQuery]);
+  // --- END LOGIKA FILTER ---
 
   useEffect(() => {
     const selectedDinilai = dataDosen.find((d) => d.NIDN == dinilaiId) || null;
@@ -21,13 +46,8 @@ function InpassingForm({ onBackClick }) {
     const pendidikanTerakhir =
       selectedDinilai?.pendidikanS3 || selectedDinilai?.pendidikanS2 || "";
 
-    const newFormData = {
-      // Data manual dari form (dipertahankan nilainya)
-      nomor_surat: formData.nomor_surat || "",
-      tanggal_surat: formData.tanggal_surat || "",
-      pangkat_usulan: formData.pangkat_usulan || "",
-      status_kepegawaian: formData.status_kepegawaian || "Dosen Tetap Yayasan",
-
+    setFormData((prevData) => ({
+      ...prevData,
       dinilai_nama: namaTampilDinilai,
       dinilai_id: selectedDinilai?.NUPTK || "",
       dinilai_nidn: selectedDinilai?.NIDN || "",
@@ -61,15 +81,26 @@ function InpassingForm({ onBackClick }) {
       jabatan_fungsional: selectedDinilai?.jabatanAkademik || "",
       pangkat_golongan: selectedDinilai?.Inpassing || "",
       prodi: selectedDinilai?.programStudi || "",
-    };
-
-    setFormData(newFormData);
+    }));
   }, [dinilaiId, penilaiId]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
+
+  // --- FUNGSI BARU UNTUK PENCARIAN ---
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setIsDropdownVisible(true);
+  };
+
+  const handleSelectDosen = (dosen) => {
+    setDinilaiId(dosen.NIDN);
+    setSearchQuery(dosen.namaDosenGelar || dosen.namaDosen);
+    setIsDropdownVisible(false);
+  };
+  // --- END FUNGSI BARU ---
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -125,20 +156,35 @@ function InpassingForm({ onBackClick }) {
         <fieldset>
           <legend>1. Data Utama</legend>
           <div className="form-group">
-            <label>Pilih Dosen yang Diajukan:</label>
-            <select onChange={(e) => setDinilaiId(e.target.value)} required>
-              <option value="">-- Pilih Nama Dosen --</option>
-              {dataDosen
-                .filter((d) => !d.jabatan_struktural)
-                .map((d) => {
-                  const displayName = d.namaDosenGelar || d.namaDosen;
-                  return (
-                    <option key={d.NIDN || d.NUPTK} value={d.NIDN}>
-                      {displayName}
-                    </option>
-                  );
-                })}
-            </select>
+            <label>Cari & Pilih Dosen yang Diajukan:</label>
+            {/* --- ELEMEN INPUT DENGAN FITUR SEARCH --- */}
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFocus={() => setIsDropdownVisible(true)}
+              onBlur={() => setTimeout(() => setIsDropdownVisible(false), 200)} // Menutup dropdown saat fokus hilang
+              placeholder="Ketik nama dosen untuk mencari..."
+              autoComplete="off"
+              required
+            />
+            {isDropdownVisible && searchQuery && (
+              <ul className="search-results">
+                {filteredDosen.length > 0 ? (
+                  filteredDosen.map((d) => (
+                    <li
+                      key={d.NIDN || d.NUPTK}
+                      onClick={() => handleSelectDosen(d)}
+                    >
+                      {d.namaDosenGelar || d.namaDosen}
+                    </li>
+                  ))
+                ) : (
+                  <li className="no-result">Dosen tidak ditemukan</li>
+                )}
+              </ul>
+            )}
+            {/* --- END ELEMEN INPUT --- */}
           </div>
           {dinilaiId && (
             <div className="details-view">
@@ -160,7 +206,7 @@ function InpassingForm({ onBackClick }) {
             <fieldset>
               <legend>2. Data Pelengkap (Input Manual)</legend>
               <div className="form-group">
-                <label>Nomor Surat Pengantar :</label>
+                <label>Nomor Surat Pengantar:</label>
                 <input
                   type="text"
                   name="nomor_surat"
@@ -196,7 +242,7 @@ function InpassingForm({ onBackClick }) {
                 <label>Status Kepegawaian:</label>
                 <select
                   name="status_kepegawaian"
-                  value={formData.status_kepegawaian || "Dosen Tetap Yayasan"}
+                  value={formData.status_kepegawaian}
                   onChange={handleInputChange}
                   required
                 >
@@ -212,7 +258,11 @@ function InpassingForm({ onBackClick }) {
               <legend>3. Data Penilai</legend>
               <div className="form-group">
                 <label>Pilih Pejabat Penilai:</label>
-                <select onChange={(e) => setPenilaiId(e.target.value)} required>
+                <select
+                  value={penilaiId}
+                  onChange={(e) => setPenilaiId(e.target.value)}
+                  required
+                >
                   <option value="">-- Pilih Penilai --</option>
                   {dataDosen
                     .filter((d) => d.jabatan_struktural)
