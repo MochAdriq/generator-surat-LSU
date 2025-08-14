@@ -54,6 +54,7 @@ export const dataDosen = [
     Inpassing: "Penata Tk. I, golongan ruang III/d",
     tmtInpassing: "01 Januari 2026",
     pendidikanS2: "Magister Akuntansi",
+    jabatan_struktural: "Ketua Prodi Akuntansi",
   },
   {
     NIDN: "\t0428047904",
@@ -184,6 +185,7 @@ export const dataDosen = [
     Inpassing: "Penata, golongan ruang III/c",
     tmtInpassing: "01 Januari 2026",
     pendidikanS2: "Magister Seni",
+    jabatan_struktural: "Ketua Prodi Desain Komunikasi Visual",
   },
   {
     NIDN: "8951550022\t",
@@ -390,6 +392,7 @@ export const dataDosen = [
     Inpassing: "Penata, golongan ruang III/c",
     tmtInpassing: "01 Januari 2026",
     pendidikanS2: "Magister Kenotariatan",
+    jabatan_struktural: "Ketua Prodi Hukum",
   },
   {
     NIDN: "0411068302",
@@ -747,6 +750,7 @@ export const dataDosen = [
     Inpassing: "Penata Muda Tk. I, golongan ruang III/b",
     tmtInpassing: "01 Februari 2023",
     pendidikanS2: "Magister Manajemen",
+    jabatan_struktural: "Ketua Prodi Manajemen",
   },
   {
     NIDN: "0428049204",
@@ -1512,6 +1516,7 @@ export const dataDosen = [
     Inpassing: "Penata, golongan ruang III/c",
     tmtInpassing: "01 Januari 2026",
     pendidikanS2: "Magister Manajemen",
+    jabatan_struktural: "Ketua Prodi Pendidikan Guru Sekolah Dasar",
   },
   {
     NIDN: "0417049102",
@@ -1618,6 +1623,7 @@ export const dataDosen = [
     Inpassing: "Penata Tk. I, golongan ruang III/d",
     tmtInpassing: "01 Januari 2026",
     pendidikanS2: "Magister Sistem Informasi",
+    jabatan_struktural: "Ketua Prodi Sistem Informasi",
   },
   {
     NIDN: "0417087609",
@@ -1907,6 +1913,7 @@ export const dataDosen = [
     jabatanAkademik: "Tenaga Pengajar",
     tmtJad: "01 Februari 2024",
     pendidikanS2: "Magister Teknik",
+    jabatan_struktural: "Ketua Prodi Teknik Elektro",
   },
   {
     NIDN: "0306118401",
@@ -2160,6 +2167,7 @@ export const dataDosen = [
     Inpassing: "Penata, golongan ruang III/c",
     tmtInpassing: "01 Januari 2024",
     pendidikanS2: "Magister Informatika",
+    jabatan_struktural: "Ketua Prodi Teknik Informatika",
   },
   {
     NIDN: "8875823420 ",
@@ -2336,6 +2344,7 @@ export const dataDosen = [
     Inpassing: "Penata, golongan ruang III/c",
     tmtInpassing: "01 Januari 2026",
     pendidikanS2: "Magister Sains",
+    jabatan_struktural: "Ketua Prodi Teknik Mesin",
   },
   {
     NIDN: "0418028708",
@@ -2681,6 +2690,7 @@ export const dataDosen = [
     Inpassing: "Penata Muda Tk. I, golongan ruang III/b",
     tmtInpassing: "01 Mei 2024",
     pendidikanS2: "Magister Teknik",
+    jabatan_struktural: "Ketua Prodi Teknik Sipil",
   },
   {
     NIDN: "012025013",
