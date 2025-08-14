@@ -23,6 +23,13 @@ function JadForm({ onBackClick }) {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   // --- END STATE PENCARIAN ---
 
+  // --- STATE UNTUK PENCARIAN PENILAI ---
+  const [penilaiSearchQuery, setPenilaiSearchQuery] = useState("");
+  const [filteredPenilai, setFilteredPenilai] = useState([]);
+  const [isPenilaiDropdownVisible, setIsPenilaiDropdownVisible] =
+    useState(false);
+  // --- END STATE PENILAI ---
+
   const [dinilaiId, setDinilaiId] = useState("");
   const [penilaiId, setPenilaiId] = useState("");
 
@@ -56,6 +63,22 @@ function JadForm({ onBackClick }) {
     }
   }, [searchQuery]);
   // --- END LOGIKA FILTER ---
+
+  // --- LOGIKA UNTUK FILTER PENILAI ---
+  useEffect(() => {
+    if (penilaiSearchQuery) {
+      const filtered = dataDosen.filter(
+        (d) =>
+          d.jabatan_struktural && // <-- Filter utama untuk penilai
+          (d.namaDosenGelar || d.namaDosen)
+            .toLowerCase()
+            .includes(penilaiSearchQuery.toLowerCase())
+      );
+      setFilteredPenilai(filtered);
+    } else {
+      setFilteredPenilai([]);
+    }
+  }, [penilaiSearchQuery]);
 
   useEffect(() => {
     const selectedDinilai = dataDosen.find((d) => d.NIDN == dinilaiId) || null;
@@ -125,6 +148,18 @@ function JadForm({ onBackClick }) {
     setIsDropdownVisible(false);
   };
   // --- END FUNGSI BARU ---
+
+  // --- FUNGSI BARU UNTUK PENCARIAN PENILAI ---
+  const handlePenilaiSearchChange = (e) => {
+    setPenilaiSearchQuery(e.target.value);
+    setIsPenilaiDropdownVisible(true);
+  };
+
+  const handleSelectPenilai = (penilai) => {
+    setPenilaiId(penilai.NIDN);
+    setPenilaiSearchQuery(penilai.namaDosenGelar || penilai.namaDosen);
+    setIsPenilaiDropdownVisible(false);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -294,22 +329,36 @@ function JadForm({ onBackClick }) {
             <fieldset>
               <legend>3. Data Penilai</legend>
               <div className="form-group">
-                <label>Pilih Pejabat Penilai:</label>
-                <select
-                  value={penilaiId}
-                  onChange={(e) => setPenilaiId(e.target.value)}
+                <label>Cari & Pilih Pejabat Penilai:</label>
+                <input
+                  type="text"
+                  value={penilaiSearchQuery}
+                  onChange={handlePenilaiSearchChange}
+                  onFocus={() => setIsPenilaiDropdownVisible(true)}
+                  onBlur={() =>
+                    setTimeout(() => setIsPenilaiDropdownVisible(false), 200)
+                  }
+                  placeholder="Ketik nama pejabat penilai..."
+                  autoComplete="off"
                   required
-                >
-                  <option value="">-- Pilih Penilai --</option>
-                  {dataDosen
-                    .filter((d) => d.jabatan_struktural)
-                    .map((d) => (
-                      <option key={d.NIDN} value={d.NIDN}>
-                        {d.namaDosenGelar || d.namaDosen} (
-                        {d.jabatan_struktural})
-                      </option>
-                    ))}
-                </select>
+                />
+                {isPenilaiDropdownVisible && penilaiSearchQuery && (
+                  <ul className="search-results">
+                    {filteredPenilai.length > 0 ? (
+                      filteredPenilai.map((d) => (
+                        <li
+                          key={d.NIDN || d.NUPTK}
+                          onClick={() => handleSelectPenilai(d)}
+                        >
+                          {d.namaDosenGelar || d.namaDosen} (
+                          {d.jabatan_struktural})
+                        </li>
+                      ))
+                    ) : (
+                      <li className="no-result">Penilai tidak ditemukan</li>
+                    )}
+                  </ul>
+                )}
               </div>
             </fieldset>
             <fieldset>
