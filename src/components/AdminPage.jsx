@@ -23,7 +23,9 @@ function AdminPage() {
     jabatan_fungsional: "",
     tmt_jabatan: "",
     jabatan_struktural: "",
-    // Tambahkan field lain jika perlu diedit
+    // --- FIELD BARU INPASSING ---
+    pangkat_golongan: "",
+    tmt_pangkat: "",
   });
 
   // 1. FETCH DATA
@@ -55,6 +57,8 @@ function AdminPage() {
       jabatan_fungsional: "",
       tmt_jabatan: "",
       jabatan_struktural: "",
+      pangkat_golongan: "",
+      tmt_pangkat: "", // Reset field baru
     });
     setIsModalOpen(true);
   };
@@ -70,9 +74,11 @@ function AdminPage() {
       nama_gelar: dosen.nama_gelar || "",
       prodi: dosen.prodi || "",
       jabatan_fungsional: dosen.jabatan_fungsional || "",
-      // Pastikan format tanggal YYYY-MM-DD untuk input type="date"
       tmt_jabatan: dosen.tmt_jabatan || "",
       jabatan_struktural: dosen.jabatan_struktural || "",
+      // Isi data lama ke form
+      pangkat_golongan: dosen.pangkat_golongan || "",
+      tmt_pangkat: dosen.tmt_pangkat || "",
     });
     setIsModalOpen(true);
   };
@@ -86,13 +92,11 @@ function AdminPage() {
 
     let error;
     if (modalMode === "add") {
-      // Logic Tambah Baru
       const { error: insertError } = await supabase
         .from("dosen")
         .insert([formData]);
       error = insertError;
     } else {
-      // Logic Update (Edit)
       const { error: updateError } = await supabase
         .from("dosen")
         .update(formData)
@@ -145,7 +149,8 @@ function AdminPage() {
                 <th>Nama Lengkap</th>
                 <th>Prodi</th>
                 <th>Jabatan Fungsional</th>
-                <th>TMT</th>
+                <th>TMT Jabatan</th>
+                {/* Opsi: Bisa tambah kolom Pangkat/Inpassing disini kalau mau tampil di tabel */}
                 <th>Aksi</th>
               </tr>
             </thead>
@@ -155,7 +160,9 @@ function AdminPage() {
                   <td>
                     <strong>{d.nama_gelar}</strong>
                     <br />
-                    <small>NIDN: {d.nidn}</small>
+                    <small>
+                      NIDN: {d.nidn || "-"} | NUPTK: {d.nuptk || "-"}
+                    </small>
                   </td>
                   <td>{d.prodi}</td>
                   <td>{d.jabatan_fungsional}</td>
@@ -181,7 +188,6 @@ function AdminPage() {
           <div className="modal-content">
             <h3>{modalMode === "add" ? "Tambah Dosen" : "Edit Data Dosen"}</h3>
             <form onSubmit={handleSave}>
-              {/* Form Input Data - Bisa disesuaikan mau field apa saja */}
               <div className="form-group">
                 <label>Nama Lengkap (dengan Gelar)</label>
                 <input
@@ -202,15 +208,28 @@ function AdminPage() {
                   required
                 />
               </div>
-              <div className="form-group">
-                <label>NIDN</label>
-                <input
-                  value={formData.nidn}
-                  onChange={(e) =>
-                    setFormData({ ...formData, nidn: e.target.value })
-                  }
-                />
+
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label>NIDN</label>
+                  <input
+                    value={formData.nidn}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nidn: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label>NUPTK</label>
+                  <input
+                    value={formData.nuptk}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nuptk: e.target.value })
+                    }
+                  />
+                </div>
               </div>
+
               <div className="form-group">
                 <label>Prodi</label>
                 <input
@@ -221,19 +240,20 @@ function AdminPage() {
                 />
               </div>
 
-              {/* FIELD UTAMA YANG BOSS MAU UBAH */}
+              {/* --- BAGIAN JABATAN AKADEMIK --- */}
               <div
                 style={{
-                  background: "#f0f8ff",
+                  background: "#e6f7ff",
                   padding: "10px",
                   borderRadius: "4px",
                   margin: "10px 0",
                 }}
               >
+                <h4 style={{ margin: "0 0 10px 0", color: "#0050b3" }}>
+                  Jabatan Akademik
+                </h4>
                 <div className="form-group">
-                  <label style={{ color: "#2d1a4d", fontWeight: "bold" }}>
-                    Jabatan Fungsional
-                  </label>
+                  <label>Jabatan Fungsional</label>
                   <input
                     value={formData.jabatan_fungsional}
                     onChange={(e) =>
@@ -242,17 +262,53 @@ function AdminPage() {
                         jabatan_fungsional: e.target.value,
                       })
                     }
+                    placeholder="Contoh: Lektor"
                   />
                 </div>
                 <div className="form-group">
-                  <label style={{ color: "#2d1a4d", fontWeight: "bold" }}>
-                    TMT Jabatan
-                  </label>
+                  <label>TMT Jabatan</label>
                   <input
                     type="date"
                     value={formData.tmt_jabatan}
                     onChange={(e) =>
                       setFormData({ ...formData, tmt_jabatan: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* --- BAGIAN INPASSING (PANGKAT/GOLONGAN) --- */}
+              <div
+                style={{
+                  background: "#f9f0ff",
+                  padding: "10px",
+                  borderRadius: "4px",
+                  margin: "10px 0",
+                }}
+              >
+                <h4 style={{ margin: "0 0 10px 0", color: "#531dab" }}>
+                  Inpassing / Pangkat
+                </h4>
+                <div className="form-group">
+                  <label>Pangkat/Golongan Ruang</label>
+                  <input
+                    value={formData.pangkat_golongan}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        pangkat_golongan: e.target.value,
+                      })
+                    }
+                    placeholder="Contoh: Penata, III/c"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>TMT Pangkat/Inpassing</label>
+                  <input
+                    type="date"
+                    value={formData.tmt_pangkat}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tmt_pangkat: e.target.value })
                     }
                   />
                 </div>
