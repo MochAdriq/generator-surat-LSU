@@ -12,13 +12,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.86.2",
     "archiver": "^7.0.1",
     "cors": "^2.8.5",
     "docxtemplater": "^3.65.2",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "pizzip": "^3.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-router-dom": "^7.10.1",
     "terbilang": "^0.0.3"
   },
   "devDependencies": {

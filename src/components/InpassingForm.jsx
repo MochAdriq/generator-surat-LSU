@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { dataDosen } from "../data.js";
+import { supabase } from "../lib/supabaseClient";
+import { formatDateIndo } from "../utils/dateUtils";
 import "./InpassingForm.css";
 
 function InpassingForm({ onBackClick }) {
@@ -7,6 +8,10 @@ function InpassingForm({ onBackClick }) {
     nomor_surat: "…/Sper/UNsP/VII/2025",
     status_kepegawaian: "Dosen Tetap Yayasan",
   });
+
+  // --- STATE DATA DARI DATABASE ---
+  const [dataDosen, setDataDosen] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // --- STATE UNTUK FUNGSI PENCARIAN ---
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,25 +22,59 @@ function InpassingForm({ onBackClick }) {
   const [dinilaiId, setDinilaiId] = useState("");
   const [penilaiId, setPenilaiId] = useState("");
 
-  // --- LOGIKA UNTUK MELAKUKAN FILTER SAAT PENCARIAN ---
+  // --- FETCH DATA DARI SUPABASE ---
   useEffect(() => {
-    if (searchQuery) {
-      const filtered = dataDosen.filter(
-        (d) =>
-          !d.jabatan_struktural &&
-          (d.namaDosenGelar || d.namaDosen)
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
+    const fetchData = async () => {
+      setIsLoading(true);
+      const { data, error } = await supabase.from("dosen").select("*");
+
+      if (error) {
+        console.error("Error fetching data:", error);
+        alert("Gagal mengambil data dosen dari database.");
+      } else {
+        // Mapping data dari Database (snake_case) ke format Aplikasi (camelCase)
+        const formattedData = data.map((d) => ({
+          NIDN: d.nidn,
+          NUPTK: d.nuptk,
+          namaDosen: d.nama,
+          namaDosenGelar: d.nama_gelar,
+          programStudi: d.prodi,
+          jabatanAkademik: d.jabatan_fungsional,
+          // Gunakan utility format tanggal di sini
+          tmtJad: formatDateIndo(d.tmt_jabatan),
+          Inpassing: d.pangkat_golongan,
+          tmtInpassing: formatDateIndo(d.tmt_pangkat),
+          pendidikanS2: d.pendidikan_s2,
+          pendidikanS3: d.pendidikan_s3,
+          jabatan_struktural: d.jabatan_struktural,
+        }));
+        setDataDosen(formattedData);
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  // --- LOGIKA UNTUK MELAKUKAN FILTER SAAT PENCARIAN (FIX BUG) ---
+  useEffect(() => {
+    if (searchQuery && dataDosen.length > 0) {
+      const filtered = dataDosen.filter((d) =>
+        // HAPUS filter jabatan_struktural agar semua dosen muncul
+        (d.namaDosenGelar || d.namaDosen)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
       );
       setFilteredDosen(filtered);
     } else {
       // Kosongkan hasil jika input search kosong
       setFilteredDosen([]);
     }
-  }, [searchQuery]);
+  }, [searchQuery, dataDosen]);
   // --- END LOGIKA FILTER ---
 
   useEffect(() => {
+    // Cari data berdasarkan NIDN di state dataDosen yang sudah di-fetch
     const selectedDinilai = dataDosen.find((d) => d.NIDN == dinilaiId) || null;
     const selectedPenilai = dataDosen.find((d) => d.NIDN == penilaiId) || null;
 
@@ -82,14 +121,14 @@ function InpassingForm({ onBackClick }) {
       pangkat_golongan: selectedDinilai?.Inpassing || "",
       prodi: selectedDinilai?.programStudi || "",
     }));
-  }, [dinilaiId, penilaiId]);
+  }, [dinilaiId, penilaiId, dataDosen]); // Tambah dependency dataDosen
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // --- FUNGSI BARU UNTUK PENCARIAN ---
+  // --- FUNGSI PENCARIAN ---
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     setIsDropdownVisible(true);
@@ -100,7 +139,7 @@ function InpassingForm({ onBackClick }) {
     setSearchQuery(dosen.namaDosenGelar || dosen.namaDosen);
     setIsDropdownVisible(false);
   };
-  // --- END FUNGSI BARU ---
+  // --- END FUNGSI PENCARIAN ---
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -152,6 +191,12 @@ function InpassingForm({ onBackClick }) {
       <h2>Form Kelengkapan Inpassing</h2>
       <p>Isi data di bawah ini untuk men-generate 3 surat sekaligus.</p>
 
+      {isLoading && (
+        <p style={{ textAlign: "center", color: "blue" }}>
+          Sedang memuat data dosen dari database...
+        </p>
+      )}
+
       <form className="super-form" onSubmit={handleSubmit}>
         <fieldset>
           <legend>1. Data Utama</legend>
@@ -167,6 +212,7 @@ function InpassingForm({ onBackClick }) {
               placeholder="Ketik nama dosen untuk mencari..."
               autoComplete="off"
               required
+              disabled={isLoading}
             />
             {isDropdownVisible && searchQuery && (
               <ul className="search-results">
@@ -262,8 +308,11 @@ function InpassingForm({ onBackClick }) {
                   value={penilaiId}
                   onChange={(e) => setPenilaiId(e.target.value)}
                   required
+                  disabled={isLoading}
                 >
                   <option value="">-- Pilih Penilai --</option>
+                  {/* Di sini filter jabatan_struktural tetap ada karena untuk dropdown manual, 
+                      bukan pencarian dinilai. Jadi logic ini BENAR dan AMAN. */}
                   {dataDosen
                     .filter((d) => d.jabatan_struktural)
                     .map((d) => (

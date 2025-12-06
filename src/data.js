@@ -1243,7 +1243,7 @@ export const dataDosen = [
     pendidikanS3: "Doktor - Manajemen Pendidiakn",
   },
   {
-    NIDN: "0429126903",
+    NIDN: "8915420021",
     NUPTK: "9351744645130063",
     namaDosen: "UJANG SYARIP HIDAYAT",
     namaDosenGelar: "Dr. Ujang Syarip Hidayat, S.Pd., M.Pd.",
