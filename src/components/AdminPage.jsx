@@ -157,6 +157,7 @@ function AdminPage() {
                 <th>Jabatan Fungsional</th>
                 <th>TMT Jabatan</th>
                 <th>Inpassing / Pangkat</th>
+                <th>TMT Inpassing</th>
                 <th>Aksi</th>
               </tr>
             </thead>
@@ -173,13 +174,8 @@ function AdminPage() {
                   <td>{d.prodi}</td>
                   <td>{d.jabatan_fungsional}</td>
                   <td>{formatDateIndo(d.tmt_jabatan)}</td>
-                  <td>
-                    {d.pangkat_golongan || "-"}
-                    <br />
-                    <small className="text-muted">
-                      {d.tmt_pangkat ? formatDateIndo(d.tmt_pangkat) : ""}
-                    </small>
-                  </td>
+                  <td>{d.pangkat_golongan || "-"}</td>
+                  <td>{formatDateIndo(d.tmt_pangkat)}</td>
                   <td>
                     <button
                       className="action-btn"
