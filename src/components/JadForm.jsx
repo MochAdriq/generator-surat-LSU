@@ -11,11 +11,11 @@ function JadForm({ onBackClick }) {
     hari_teks: "",
     ttl_dosen: "",
     bidang_ilmu: "",
-    nomor_surat_pengantar: "…/Spn/UNSP/VII/2025",
-    nomor_surat_senat: "…/BA/UNSP/VII/2025",
-    nomor_surat_komite: "…/BA-K/UNSP/VII/2025",
-    nomor_surat_pi: "…/Sper-PI/UNsP/VII/2025",
-    nomor_surat_integritas: "…/Sper-PI/UNsP/VII/2025",
+    nomor_surat_pengantar: "…/Spn/NPU/I/2026",
+    nomor_surat_senat: "…/BA/NPU/I/2026",
+    nomor_surat_komite: "…/BA-K/NPU/I/2026",
+    nomor_surat_pi: "…/Sper-PIK/NPU/I/2026",
+    nomor_surat_integritas: "…/Sper-PIP/NPU/I/2026",
   });
 
   // --- STATE DATA DARI DATABASE ---
@@ -427,7 +427,7 @@ function JadForm({ onBackClick }) {
                 />
               </div>
               <div className="form-group">
-                <label>Nomor Surat Fakta Integritas:</label>
+                <label>Nomor Surat PI Kenaikan JAD:</label>
                 <input
                   type="text"
                   name="nomor_surat_integritas"
@@ -445,7 +445,7 @@ function JadForm({ onBackClick }) {
                 />
               </div>
               <div className="form-group">
-                <label>Nomor Surat Pernyataan PI:</label>
+                <label>Nomor Surat PI Pengesahan Validasi:</label>
                 <input
                   type="text"
                   name="nomor_surat_pi"
