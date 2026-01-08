@@ -88,18 +88,24 @@ function AdminPage() {
     e.preventDefault();
 
     // Validasi sederhana
-    if (!formData.nama) return alert("Nama wajib diisi!");
+    // if (!formData.nama) return alert("Nama wajib diisi!");
+
+    const dataToSave = {
+      ...formData,
+      tmt_jabatan: formData.tmt_jabatan || null,
+      tmt_pangkat: formData.tmt_pangkat || null,
+    };
 
     let error;
     if (modalMode === "add") {
       const { error: insertError } = await supabase
         .from("dosen")
-        .insert([formData]);
+        .insert([dataToSave]);
       error = insertError;
     } else {
       const { error: updateError } = await supabase
         .from("dosen")
-        .update(formData)
+        .update(dataToSave)
         .eq("id", currentId);
       error = updateError;
     }
@@ -195,7 +201,6 @@ function AdminPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, nama_gelar: e.target.value })
                   }
-                  required
                 />
               </div>
               <div className="form-group">
@@ -205,7 +210,6 @@ function AdminPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, nama: e.target.value })
                   }
-                  required
                 />
               </div>
 
