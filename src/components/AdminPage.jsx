@@ -156,7 +156,7 @@ function AdminPage() {
                 <th>Prodi</th>
                 <th>Jabatan Fungsional</th>
                 <th>TMT Jabatan</th>
-                {/* Opsi: Bisa tambah kolom Pangkat/Inpassing disini kalau mau tampil di tabel */}
+                <th>Inpassing / Pangkat</th>
                 <th>Aksi</th>
               </tr>
             </thead>
@@ -173,6 +173,13 @@ function AdminPage() {
                   <td>{d.prodi}</td>
                   <td>{d.jabatan_fungsional}</td>
                   <td>{formatDateIndo(d.tmt_jabatan)}</td>
+                  <td>
+                    {d.pangkat_golongan || "-"}
+                    <br />
+                    <small className="text-muted">
+                      {d.tmt_pangkat ? formatDateIndo(d.tmt_pangkat) : ""}
+                    </small>
+                  </td>
                   <td>
                     <button
                       className="action-btn"
