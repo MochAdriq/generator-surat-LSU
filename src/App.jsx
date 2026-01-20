@@ -19,7 +19,7 @@ function DashboardLayout({ children }) {
   useEffect(() => {
     // Setting Waktu: 30 Menit (dalam milidetik)
     // Rumus: Menit * 60 * 1000
-    const MAX_IDLE_TIME = 1 * 60 * 1000;
+    const MAX_IDLE_TIME = 20 * 60 * 1000;
 
     let timeoutId;
 
